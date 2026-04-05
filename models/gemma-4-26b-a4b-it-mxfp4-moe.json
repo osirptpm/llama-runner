@@ -13,7 +13,10 @@
   },
   "user": {
     "enabled": true,
-    "args": [],
+    "args": [
+      "--cache-ram",
+      "0"
+    ],
     "notes": ""
   }
 }

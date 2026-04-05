@@ -31,8 +31,6 @@
     "--numa",
     "distribute",
     "-np",
-    "1",
-    "--cache-ram",
-    "0"
+    "1"
   ]
 }
