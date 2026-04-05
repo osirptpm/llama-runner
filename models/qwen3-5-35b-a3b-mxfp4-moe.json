@@ -1,0 +1,19 @@
+{
+  "key": "qwen3-5-35b-a3b-mxfp4-moe",
+  "displayName": "Qwen3.5-35B-A3B-MXFP4_MOE",
+  "paths": {
+    "model": "D:/gguf/Qwen3.5-35B-A3B-MXFP4_MOE/Qwen3.5-35B-A3B-MXFP4_MOE.gguf",
+    "mmproj": "D:/gguf/Qwen3.5-35B-A3B-MXFP4_MOE/Qwen3.5-35B-A3B-MXFP4_MOE-mmproj.gguf"
+  },
+  "detected": {
+    "directoryName": "Qwen3.5-35B-A3B-MXFP4_MOE",
+    "sourceRoot": "D:/gguf",
+    "scannedAt": "2026-04-05T03:44:38.868Z",
+    "status": "ready"
+  },
+  "user": {
+    "enabled": true,
+    "args": [],
+    "notes": ""
+  }
+}

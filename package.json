@@ -1,0 +1,11 @@
+{
+  "name": "llama-runner",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Cross-platform llama.cpp launcher with model sync and preset selection",
+  "scripts": {
+    "sync": "node src/cli.js sync",
+    "run": "node src/cli.js run"
+  }
+}

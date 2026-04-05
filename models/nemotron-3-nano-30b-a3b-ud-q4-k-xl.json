@@ -1,0 +1,19 @@
+{
+  "key": "nemotron-3-nano-30b-a3b-ud-q4-k-xl",
+  "displayName": "Nemotron-3-Nano-30B-A3B-UD-Q4_K_XL",
+  "paths": {
+    "model": "D:/gguf/Nemotron-3-Nano-30B-A3B-UD-Q4_K_XL/Nemotron-3-Nano-30B-A3B-UD-Q4_K_XL.gguf",
+    "mmproj": ""
+  },
+  "detected": {
+    "directoryName": "Nemotron-3-Nano-30B-A3B-UD-Q4_K_XL",
+    "sourceRoot": "D:/gguf",
+    "scannedAt": "2026-04-05T03:44:38.865Z",
+    "status": "ready"
+  },
+  "user": {
+    "enabled": true,
+    "args": [],
+    "notes": ""
+  }
+}

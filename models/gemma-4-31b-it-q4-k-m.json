@@ -1,0 +1,26 @@
+{
+  "key": "gemma-4-31b-it-q4-k-m",
+  "displayName": "gemma-4-31B-it-Q4_K_M",
+  "paths": {
+    "model": "D:/gguf/gemma-4-31B-it-Q4_K_M/gemma-4-31B-it-Q4_K_M.gguf",
+    "mmproj": "D:/gguf/gemma-4-31B-it-Q4_K_M/mmproj-F16.gguf"
+  },
+  "detected": {
+    "directoryName": "gemma-4-31B-it-Q4_K_M",
+    "sourceRoot": "D:/gguf",
+    "scannedAt": "2026-04-05T03:44:38.864Z",
+    "status": "ready"
+  },
+  "user": {
+    "enabled": true,
+    "args": [
+      "--temp",
+      "1.0",
+      "--top-p",
+      "0.95",
+      "--top-k",
+      "64"
+    ],
+    "notes": ""
+  }
+}

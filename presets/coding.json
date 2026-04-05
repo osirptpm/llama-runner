@@ -1,0 +1,18 @@
+{
+  "key": "coding",
+  "displayName": "Coding",
+  "args": [
+    "--temp",
+    "0.6",
+    "--top-p",
+    "0.95",
+    "--top-k",
+    "20",
+    "--min-p",
+    "0.0",
+    "--presence-penalty",
+    "0.0",
+    "--repeat-penalty",
+    "1.0"
+  ]
+}

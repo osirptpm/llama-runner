@@ -1,0 +1,19 @@
+{
+  "key": "gemma-4-26b-a4b-it-mxfp4-moe",
+  "displayName": "gemma-4-26B-A4B-it-MXFP4_MOE",
+  "paths": {
+    "model": "D:/gguf/gemma-4-26B-A4B-it-MXFP4_MOE/gemma-4-26B-A4B-it-MXFP4_MOE.gguf",
+    "mmproj": "D:/gguf/gemma-4-26B-A4B-it-MXFP4_MOE/mmproj-F16.gguf"
+  },
+  "detected": {
+    "directoryName": "gemma-4-26B-A4B-it-MXFP4_MOE",
+    "sourceRoot": "D:/gguf",
+    "scannedAt": "2026-04-05T03:44:38.863Z",
+    "status": "ready"
+  },
+  "user": {
+    "enabled": true,
+    "args": [],
+    "notes": ""
+  }
+}

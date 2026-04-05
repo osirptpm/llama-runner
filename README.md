@@ -1,31 +1,62 @@
-# runner
+# llama-runner
 
-`runner/command.sh` is the shared launcher for llama.cpp server profiles.
+Node.js based llama.cpp launcher with:
 
-## Usage
+- cross-platform execution on Windows and Linux
+- model sync from a configurable GGUF root
+- interactive model selection and preset selection
+- editable JSON model files with preserved user args
+- daily rotating logs with 3-day retention
 
-```bash
-./runner/command.sh
-./runner/command.sh gemma4
-LLAMA_SERVER_BIN=/custom/path/llama-server ./runner/command.sh gemma4
-```
-
-## Profile files
-
-Create a new file in `runner/profiles/<name>.conf` with:
+## Commands
 
 ```bash
-PROFILE_NAME="my-profile"
-PROFILE_DESCRIPTION="Optional description"
-MODEL_PATH="/path/to/model.gguf"
-MMPROJ_PATH=""
-ARGS=(
-  --temp 0.7
-  --top-p 0.95
-)
+node src/cli.js sync
+node src/cli.js run
+node src/cli.js run --model gemma-4-31b-it-q4-k-m --preset coding
 ```
 
-## Logs
+You can also use:
 
-Logs are written to `runner/logs/<profile>/YYYY-MM-DD.log` while still printing to the console.
-Files older than 3 days are removed automatically each time the profile restarts.
+```bash
+npm run sync
+npm run run
+```
+
+`command.sh` now just forwards to the Node launcher for compatibility.
+
+## Settings
+
+Global settings live in `config/settings.json`.
+
+- `modelsRoot`: GGUF base directory to scan
+- `logsRetentionDays`: delete old logs after this many days
+- `restartDelaySeconds`: delay before auto restart
+- `llamaServerBin`: optional explicit binary path
+- `commonArgs`: shared llama-server arguments
+
+## Models
+
+Run `sync` to scan `modelsRoot` and generate `models/*.json`.
+
+Each model file keeps:
+
+- `paths` and `detected`: updated by sync
+- `user.args`: preserved for your manual llama-server overrides
+- `user.enabled`: hide a model from the launcher without deleting it
+
+`run` will sync first, then show:
+
+1. model selection
+2. preset selection
+
+Right before spawning `llama-server`, it reloads the selected model JSON and preset JSON, so edits are picked up on the next start without restarting the launcher itself.
+
+## Presets
+
+Presets live in `presets/*.json`.
+
+- `general.json`
+- `coding.json`
+
+You can add more presets by creating another JSON file with `key`, `displayName`, and `args`.

@@ -1,0 +1,19 @@
+{
+  "key": "qwen3-5-27b-uncensored-hauhaucs-aggressive-q4-k-m",
+  "displayName": "Qwen3.5-27B-Uncensored-HauhauCS-Aggressive-Q4_K_M",
+  "paths": {
+    "model": "D:/gguf/Qwen3.5-27B-Uncensored-HauhauCS-Aggressive-Q4_K_M/Qwen3.5-27B-Uncensored-HauhauCS-Aggressive-Q4_K_M.gguf",
+    "mmproj": "D:/gguf/Qwen3.5-27B-Uncensored-HauhauCS-Aggressive-Q4_K_M/Qwen3.5-27B-Uncensored-HauhauCS-Aggressive-Q4_K_M-mmproj.gguf"
+  },
+  "detected": {
+    "directoryName": "Qwen3.5-27B-Uncensored-HauhauCS-Aggressive-Q4_K_M",
+    "sourceRoot": "D:/gguf",
+    "scannedAt": "2026-04-05T03:44:38.867Z",
+    "status": "ready"
+  },
+  "user": {
+    "enabled": true,
+    "args": [],
+    "notes": ""
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "key": "qwen3-5-27b-q5-k-m",
+  "displayName": "Qwen3.5-27B-Q5_K_M",
+  "paths": {
+    "model": "D:/gguf/Qwen3.5-27B-Q5_K_M/Qwen3.5-27B-Q5_K_M.gguf",
+    "mmproj": "D:/gguf/Qwen3.5-27B-Q5_K_M/mmproj-F16.gguf"
+  },
+  "detected": {
+    "directoryName": "Qwen3.5-27B-Q5_K_M",
+    "sourceRoot": "D:/gguf",
+    "scannedAt": "2026-04-05T03:44:38.866Z",
+    "status": "ready"
+  },
+  "user": {
+    "enabled": true,
+    "args": [],
+    "notes": ""
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "key": "gpt-oss-20b-f16",
+  "displayName": "gpt-oss-20b-F16",
+  "paths": {
+    "model": "D:/gguf/gpt-oss-20b-F16/gpt-oss-20b-F16.gguf",
+    "mmproj": ""
+  },
+  "detected": {
+    "directoryName": "gpt-oss-20b-F16",
+    "sourceRoot": "D:/gguf",
+    "scannedAt": "2026-04-05T03:44:38.864Z",
+    "status": "ready"
+  },
+  "user": {
+    "enabled": true,
+    "args": [],
+    "notes": ""
+  }
+}

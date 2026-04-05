@@ -1,0 +1,27 @@
+{
+  "key": "elbaz-nvidia-nemotron-3-nano-30b-a3b-prism-iq4-xs",
+  "displayName": "Elbaz-NVIDIA-Nemotron-3-Nano-30B-A3B-PRISM-IQ4_XS",
+  "paths": {
+    "model": "D:/gguf/Elbaz-NVIDIA-Nemotron-3-Nano-30B-A3B-PRISM-IQ4_XS/Elbaz-NVIDIA-Nemotron-3-Nano-30B-A3B-PRISM-IQ4_XS.gguf",
+    "mmproj": ""
+  },
+  "detected": {
+    "directoryName": "Elbaz-NVIDIA-Nemotron-3-Nano-30B-A3B-PRISM-IQ4_XS",
+    "sourceRoot": "D:/gguf",
+    "scannedAt": "2026-04-05T03:44:38.861Z",
+    "status": "ready"
+  },
+  "user": {
+    "enabled": true,
+    "args": [
+      "-a",
+      "Elbaz-NVIDIA-Nemotron-3-Nano-30B-A3B-PRISM-IQ4_XS",
+      "--jinja",
+      "--chat-template-file",
+      "/d/gguf/chat_template.jinja",
+      "-c",
+      "1048576"
+    ],
+    "notes": ""
+  }
+}
