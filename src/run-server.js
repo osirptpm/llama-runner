@@ -40,6 +40,81 @@ function detectBinary(settings) {
   return process.platform === "win32" ? "llama-server.exe" : "llama-server";
 }
 
+function quoteShellArg(value) {
+  const text = String(value);
+
+  if (text.length === 0) {
+    return '""';
+  }
+
+  if (process.platform === "win32") {
+    if (!/[\s"]/u.test(text)) {
+      return text;
+    }
+    return `"${text.replace(/(\\*)"/g, '$1$1\\"').replace(/(\\+)$/g, "$1$1")}"`;
+  }
+
+  if (!/[\s"'\\$`]/u.test(text)) {
+    return text;
+  }
+
+  return `'${text.replace(/'/g, `'\"'\"'`)}'`;
+}
+
+function formatCommandForLog(bin, args) {
+  return [bin, ...args].map(quoteShellArg).join(" ");
+}
+
+function looksLikeOption(value) {
+  return /^--?[A-Za-z]/u.test(value);
+}
+
+function looksLikeOptionValue(value) {
+  return !looksLikeOption(value) || /^-\d+(\.\d+)?$/u.test(value);
+}
+
+function dedupeCommandArgs(args) {
+  const entries = [];
+
+  for (let index = 0; index < args.length; index += 1) {
+    const token = String(args[index]);
+
+    if (looksLikeOption(token)) {
+      const next = index + 1 < args.length ? String(args[index + 1]) : null;
+      if (next !== null && looksLikeOptionValue(next)) {
+        entries.push({
+          key: token,
+          tokens: [token, next],
+        });
+        index += 1;
+        continue;
+      }
+
+      entries.push({
+        key: token,
+        tokens: [token],
+      });
+      continue;
+    }
+
+    entries.push({
+      key: null,
+      tokens: [token],
+    });
+  }
+
+  const lastOptionIndex = new Map();
+  entries.forEach((entry, index) => {
+    if (entry.key) {
+      lastOptionIndex.set(entry.key, index);
+    }
+  });
+
+  return entries
+    .filter((entry, index) => !entry.key || lastOptionIndex.get(entry.key) === index)
+    .flatMap((entry) => entry.tokens);
+}
+
 async function loadNamedJson(dirPath, key) {
   return readJson(path.join(dirPath, `${key}.json`));
 }
@@ -178,7 +253,7 @@ function buildCommandArgs(settings, model, preset) {
     args.push(...model.user.args);
   }
 
-  return args.map((value) => String(value));
+  return dedupeCommandArgs(args.map((value) => String(value)));
 }
 
 async function announce(logger, message) {
@@ -204,6 +279,8 @@ async function runOnce(settings, modelKey, presetKey) {
   const bin = detectBinary(settings);
   const args = buildCommandArgs(settings, model, preset);
   await announce(logger, `Starting ${model.displayName} with preset ${preset.displayName}.`);
+  await announce(logger, `Working directory: ${process.cwd()}`);
+  await announce(logger, `Command: ${formatCommandForLog(bin, args)}`);
 
   const child = spawn(bin, args, {
     stdio: ["inherit", "pipe", "pipe"],
