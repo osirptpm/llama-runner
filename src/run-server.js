@@ -12,6 +12,7 @@ import {
   modelsDir,
   presetsDir,
   readJson,
+  resolveConfigPath,
 } from "./config.js";
 import { syncModels } from "./sync-models.js";
 
@@ -116,7 +117,7 @@ function dedupeCommandArgs(args) {
 }
 
 async function loadNamedJson(dirPath, key) {
-  return readJson(path.join(dirPath, `${key}.json`));
+  return readJson(await resolveConfigPath(dirPath, key));
 }
 
 async function loadCollection(dirPath) {

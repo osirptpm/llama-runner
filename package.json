@@ -7,5 +7,8 @@
   "scripts": {
     "sync": "node src/cli.js sync",
     "run": "node src/cli.js run"
+  },
+  "dependencies": {
+    "jsonc-parser": "^3.3.1"
   }
 }

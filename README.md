@@ -27,7 +27,7 @@ npm run run
 
 ## Settings
 
-Global settings live in `config/settings.json`.
+Global settings live in `config/settings.jsonc`.
 
 - `modelsRoot`: GGUF base directory to scan
 - `logsRetentionDays`: delete old logs after this many days
@@ -37,7 +37,7 @@ Global settings live in `config/settings.json`.
 
 ## Models
 
-Run `sync` to scan `modelsRoot` and generate `models/*.json`.
+Run `sync` to scan `modelsRoot` and generate `models/*.jsonc`.
 
 Each model file keeps:
 
@@ -54,9 +54,11 @@ Right before spawning `llama-server`, it reloads the selected model JSON and pre
 
 ## Presets
 
-Presets live in `presets/*.json`.
+Presets live in `presets/*.jsonc`.
 
 - `general.json`
 - `coding.json`
 
-You can add more presets by creating another JSON file with `key`, `displayName`, and `args`.
+You can add more presets by creating another JSONC file with `key`, `displayName`, and `args`.
+
+Config files support JSONC comments and also still read legacy `.json` files when present.

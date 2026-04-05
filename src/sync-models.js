@@ -148,7 +148,7 @@ export async function syncModels(settings, options = {}) {
     const modelPath = path.join(directoryPath, modelFile);
     const mmprojPath = mmprojFile ? path.join(directoryPath, mmprojFile) : "";
     const existing = existingByKey.get(key)?.value;
-    const filePath = path.join(modelsDir, `${key}.json`);
+    const filePath = existingByKey.get(key)?.filePath ?? path.join(modelsDir, `${key}.jsonc`);
     const nextValue = createModelDocument({
       key,
       directoryName: entry.name,
