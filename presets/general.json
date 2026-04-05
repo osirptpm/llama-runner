@@ -11,7 +11,7 @@
     "--min-p",
     "0.0",
     "--presence-penalty",
-    "1.5",
+    "0.0",
     "--repeat-penalty",
     "1.0"
   ]
