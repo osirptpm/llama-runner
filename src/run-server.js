@@ -27,7 +27,8 @@ function formatTimestamp(date = new Date()) {
     hour12: false,
   }).formatToParts(date);
   const lookup = Object.fromEntries(parts.filter((part) => part.type !== "literal").map((part) => [part.type, part.value]));
-  return `${lookup.year}-${lookup.month}-${lookup.day} ${lookup.hour}:${lookup.minute}:${lookup.second}`;
+  const milliseconds = String(date.getMilliseconds()).padStart(3, "0");
+  return `${lookup.year}-${lookup.month}-${lookup.day} ${lookup.hour}:${lookup.minute}:${lookup.second}.${milliseconds}`;
 }
 
 function currentLogName(date = new Date()) {
@@ -173,14 +174,21 @@ async function chooseFromList(items, label, formatter) {
 }
 
 class DailyRotatingLogger {
-  constructor(modelKey) {
+  constructor(modelKey, fileSuffix = "") {
     this.modelKey = modelKey;
+    this.fileSuffix = fileSuffix;
     this.stream = null;
     this.logDate = "";
     this.logDir = path.join(logsDir, modelKey);
+    this.pending = Promise.resolve();
+    this.closed = false;
   }
 
   async ensureStream() {
+    if (this.closed) {
+      throw new Error("Logger is closed.");
+    }
+
     const nextDate = currentLogName();
     if (this.stream && this.logDate === nextDate) {
       return;
@@ -192,18 +200,26 @@ class DailyRotatingLogger {
     }
 
     this.logDate = nextDate;
-    this.stream = fs.createWriteStream(path.join(this.logDir, `${this.logDate}.log`), { flags: "a" });
+    this.stream = fs.createWriteStream(path.join(this.logDir, `${this.logDate}${this.fileSuffix}.log`), { flags: "a" });
+  }
+
+  enqueue(operation) {
+    const next = this.pending.then(operation);
+    this.pending = next.catch(() => {});
+    return next;
   }
 
   async write(chunk) {
-    await this.ensureStream();
-    await new Promise((resolve, reject) => {
-      this.stream.write(chunk, (error) => {
-        if (error) {
-          reject(error);
-          return;
-        }
-        resolve();
+    return this.enqueue(async () => {
+      await this.ensureStream();
+      await new Promise((resolve, reject) => {
+        this.stream.write(chunk, (error) => {
+          if (error) {
+            reject(error);
+            return;
+          }
+          resolve();
+        });
       });
     });
   }
@@ -213,11 +229,14 @@ class DailyRotatingLogger {
   }
 
   async close() {
-    if (!this.stream) {
-      return;
-    }
-    await new Promise((resolve) => this.stream.end(resolve));
-    this.stream = null;
+    return this.enqueue(async () => {
+      this.closed = true;
+      if (!this.stream) {
+        return;
+      }
+      await new Promise((resolve) => this.stream.end(resolve));
+      this.stream = null;
+    });
   }
 }
 
@@ -260,7 +279,38 @@ function buildCommandArgs(settings, model, preset) {
 async function announce(logger, message) {
   const line = `[${formatTimestamp()}] ${message}`;
   console.log(line);
-  await logger.writeLine(line);
+  try {
+    await logger.writeLine(line);
+  } catch (error) {
+    console.error(`[${formatTimestamp()}] Failed to write log line: ${error.message}`);
+  }
+}
+
+async function recordError(errorLogger, message, error) {
+  const detail = error ? `${message}${os.EOL}${formatErrorMessage(error)}` : message;
+  const line = `[${formatTimestamp()}] ${detail}`;
+  console.error(line);
+
+  try {
+    await errorLogger.writeLine(line);
+  } catch (writeError) {
+    console.error(`[${formatTimestamp()}] Failed to write error log: ${formatErrorMessage(writeError)}`);
+  }
+}
+
+function formatErrorMessage(error) {
+  if (error instanceof Error) {
+    return error.stack || error.message;
+  }
+  return String(error);
+}
+
+function computeRestartDelaySeconds(baseDelaySeconds, consecutiveFailures) {
+  if (consecutiveFailures <= 1) {
+    return baseDelaySeconds;
+  }
+
+  return Math.min(baseDelaySeconds * consecutiveFailures, 30);
 }
 
 async function runOnce(settings, modelKey, presetKey) {
@@ -275,6 +325,7 @@ async function runOnce(settings, modelKey, presetKey) {
   }
 
   const logger = new DailyRotatingLogger(model.key);
+  const errorLogger = new DailyRotatingLogger(model.key, ".error");
   await cleanupOldLogs(model.key, settings.logsRetentionDays);
 
   const bin = detectBinary(settings);
@@ -303,12 +354,27 @@ async function runOnce(settings, modelKey, presetKey) {
     await logger.write(chunk);
   };
 
-  child.stdout.on("data", (chunk) => {
-    void writeChunk(chunk, process.stdout);
-  });
-  child.stderr.on("data", (chunk) => {
-    void writeChunk(chunk, process.stderr);
-  });
+  const pendingWrites = new Set();
+  const scheduleWrite = (chunk, target) => {
+    const task = writeChunk(chunk, target)
+      .catch(async (error) => {
+        await recordError(errorLogger, "Log forwarding failed.", error);
+      })
+      .finally(() => {
+        pendingWrites.delete(task);
+      });
+    pendingWrites.add(task);
+  };
+
+  const onStdoutData = (chunk) => {
+    scheduleWrite(chunk, process.stdout);
+  };
+  const onStderrData = (chunk) => {
+    scheduleWrite(chunk, process.stderr);
+  };
+
+  child.stdout.on("data", onStdoutData);
+  child.stderr.on("data", onStderrData);
 
   let result;
   try {
@@ -321,6 +387,10 @@ async function runOnce(settings, modelKey, presetKey) {
     process.off("SIGTERM", handleSigterm);
   }
 
+  child.stdout.off("data", onStdoutData);
+  child.stderr.off("data", onStderrData);
+  await Promise.allSettled([...pendingWrites]);
+
   const { code, signal } = result;
   if (signal) {
     await announce(logger, `${model.displayName} exited via signal ${signal}.`);
@@ -328,6 +398,7 @@ async function runOnce(settings, modelKey, presetKey) {
     await announce(logger, `${model.displayName} exited with code ${code ?? 0}.`);
   }
   await logger.close();
+  await errorLogger.close();
   return { code: code ?? 0, signal: signal ?? "" };
 }
 
@@ -361,12 +432,27 @@ export async function runServer(settings, options) {
     selectedPreset = await chooseFromList(allPresets, "Preset", (preset) => `${preset.displayName} (${preset.key})`);
   }
 
+  const errorLogger = new DailyRotatingLogger(selectedModel.key, ".error");
+  let consecutiveFailures = 0;
+
   while (true) {
-    const result = await runOnce(settings, selectedModel.key, selectedPreset.key);
+    let result;
+    try {
+      result = await runOnce(settings, selectedModel.key, selectedPreset.key);
+      consecutiveFailures = 0;
+    } catch (error) {
+      consecutiveFailures += 1;
+      await recordError(errorLogger, "Supervisor error.", error);
+      result = { code: 1, signal: "" };
+    }
+
     if (result.signal === "SIGINT" || result.signal === "SIGTERM" || result.code === 130) {
       break;
     }
-    console.log(`[${formatTimestamp()}] Restarting in ${settings.restartDelaySeconds}s.`);
-    await new Promise((resolve) => setTimeout(resolve, settings.restartDelaySeconds * 1000));
+    const restartDelaySeconds = computeRestartDelaySeconds(settings.restartDelaySeconds, consecutiveFailures);
+    console.log(`[${formatTimestamp()}] Restarting in ${restartDelaySeconds}s.`);
+    await new Promise((resolve) => setTimeout(resolve, restartDelaySeconds * 1000));
   }
+
+  await errorLogger.close();
 }
