@@ -313,6 +313,32 @@ function computeRestartDelaySeconds(baseDelaySeconds, consecutiveFailures) {
   return Math.min(baseDelaySeconds * consecutiveFailures, 30);
 }
 
+function createTimestampedLineSink(writeLine) {
+  let pendingLine = "";
+
+  return {
+    async writeChunk(chunk) {
+      const text = pendingLine + String(chunk);
+      const lines = text.split(/\r?\n/u);
+      pendingLine = lines.pop() ?? "";
+
+      for (const line of lines) {
+        await writeLine(`[${formatTimestamp()}] ${line}`);
+      }
+    },
+
+    async flush() {
+      if (!pendingLine) {
+        return;
+      }
+
+      const line = pendingLine;
+      pendingLine = "";
+      await writeLine(`[${formatTimestamp()}] ${line}`);
+    },
+  };
+}
+
 async function runOnce(settings, modelKey, presetKey) {
   const model = await loadNamedJson(modelsDir, modelKey);
   const preset = await loadNamedJson(presetsDir, presetKey);
@@ -349,14 +375,18 @@ async function runOnce(settings, modelKey, presetKey) {
   process.on("SIGINT", handleSigint);
   process.on("SIGTERM", handleSigterm);
 
-  const writeChunk = async (chunk, target) => {
-    target.write(chunk);
-    await logger.write(chunk);
-  };
+  const stdoutSink = createTimestampedLineSink(async (line) => {
+    process.stdout.write(`${line}${os.EOL}`);
+    await logger.writeLine(line);
+  });
+  const stderrSink = createTimestampedLineSink(async (line) => {
+    process.stderr.write(`${line}${os.EOL}`);
+    await logger.writeLine(line);
+  });
 
   const pendingWrites = new Set();
-  const scheduleWrite = (chunk, target) => {
-    const task = writeChunk(chunk, target)
+  const scheduleWrite = (sink, chunk) => {
+    const task = sink.writeChunk(chunk)
       .catch(async (error) => {
         await recordError(errorLogger, "Log forwarding failed.", error);
       })
@@ -367,10 +397,10 @@ async function runOnce(settings, modelKey, presetKey) {
   };
 
   const onStdoutData = (chunk) => {
-    scheduleWrite(chunk, process.stdout);
+    scheduleWrite(stdoutSink, chunk);
   };
   const onStderrData = (chunk) => {
-    scheduleWrite(chunk, process.stderr);
+    scheduleWrite(stderrSink, chunk);
   };
 
   child.stdout.on("data", onStdoutData);
@@ -390,6 +420,14 @@ async function runOnce(settings, modelKey, presetKey) {
   child.stdout.off("data", onStdoutData);
   child.stderr.off("data", onStderrData);
   await Promise.allSettled([...pendingWrites]);
+  await Promise.allSettled([
+    stdoutSink.flush().catch(async (error) => {
+      await recordError(errorLogger, "Stdout flush failed.", error);
+    }),
+    stderrSink.flush().catch(async (error) => {
+      await recordError(errorLogger, "Stderr flush failed.", error);
+    }),
+  ]);
 
   const { code, signal } = result;
   if (signal) {
