@@ -2,6 +2,7 @@
   "modelsRoot": "D:/gguf",
   "logsRetentionDays": 3,
   "restartDelaySeconds": 3,
+  "llamaCppDir": "D:/llama.cpp/llama",
   "llamaServerBin": "",
   "commonArgs": [
     "--host",

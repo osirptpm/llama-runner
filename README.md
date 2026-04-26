@@ -32,7 +32,8 @@ Global settings live in `config/settings.jsonc`.
 - `modelsRoot`: GGUF base directory to scan
 - `logsRetentionDays`: delete old logs after this many days
 - `restartDelaySeconds`: delay before auto restart
-- `llamaServerBin`: optional explicit binary path
+- `llamaCppDir`: optional llama.cpp build directory containing `llama-server`
+- `llamaServerBin`: optional explicit binary path. This takes precedence over `llamaCppDir`
 - `commonArgs`: shared llama-server arguments
 
 ## Models

@@ -16,6 +16,7 @@ const defaultSettings = {
   modelsRoot: "D:/gguf",
   logsRetentionDays: 3,
   restartDelaySeconds: 3,
+  llamaCppDir: "",
   llamaServerBin: "",
   commonArgs: [],
 };

@@ -35,11 +35,18 @@ function currentLogName(date = new Date()) {
   return date.toISOString().slice(0, 10);
 }
 
+function llamaServerBinaryName() {
+  return process.platform === "win32" ? "llama-server.exe" : "llama-server";
+}
+
 function detectBinary(settings) {
   if (settings.llamaServerBin) {
     return settings.llamaServerBin;
   }
-  return process.platform === "win32" ? "llama-server.exe" : "llama-server";
+  if (settings.llamaCppDir) {
+    return path.join(settings.llamaCppDir, llamaServerBinaryName());
+  }
+  return llamaServerBinaryName();
 }
 
 function quoteShellArg(value) {
