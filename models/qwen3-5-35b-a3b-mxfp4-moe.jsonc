@@ -8,8 +8,8 @@
   "detected": {
     "directoryName": "Qwen3.5-35B-A3B-MXFP4_MOE",
     "sourceRoot": "D:/gguf",
-    "scannedAt": "2026-04-05T03:44:38.868Z",
-    "status": "ready"
+    "scannedAt": "2026-04-23T13:26:45.519Z",
+    "status": "missing"
   },
   "user": {
     "enabled": true,

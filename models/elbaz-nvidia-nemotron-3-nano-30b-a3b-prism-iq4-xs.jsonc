@@ -8,8 +8,8 @@
   "detected": {
     "directoryName": "Elbaz-NVIDIA-Nemotron-3-Nano-30B-A3B-PRISM-IQ4_XS",
     "sourceRoot": "D:/gguf",
-    "scannedAt": "2026-04-05T03:44:38.861Z",
-    "status": "ready"
+    "scannedAt": "2026-04-23T13:26:45.516Z",
+    "status": "missing"
   },
   "user": {
     "enabled": true,

@@ -3,21 +3,36 @@
   "displayName": "gemma-4-31B-it-Q4_K_M",
   "paths": {
     "model": "D:/gguf/gemma-4-31B-it-Q4_K_M/gemma-4-31B-it-Q4_K_M.gguf",
-    "mmproj": "D:/gguf/gemma-4-31B-it-Q4_K_M/mmproj-F16.gguf"
+    "mmproj": "D:/gguf/gemma-4-31B-it-Q4_K_M/mmproj-BF16.gguf"
   },
   "detected": {
     "directoryName": "gemma-4-31B-it-Q4_K_M",
     "sourceRoot": "D:/gguf",
-    "scannedAt": "2026-04-05T03:44:38.864Z",
+    "scannedAt": "2026-04-26T14:51:16.681Z",
     "status": "ready"
   },
   "user": {
     "enabled": true,
     "args": [
+      "-c",
+      "81920",
+      "-b",
+      "512",
+      "-ub",
+      "256",
       "--top-k",
       "64",
       "--cache-ram",
-      "0"
+      "0",
+      "-ctk",
+      "q4_0",
+      "-ctv",
+      "q4_0",
+      "--repeat-penalty",
+      "1.08",
+      "--min-p",
+      "0.02",
+      "--no-cache-prompt"
     ],
     "notes": ""
   }

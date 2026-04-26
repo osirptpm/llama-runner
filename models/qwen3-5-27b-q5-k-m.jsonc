@@ -8,8 +8,8 @@
   "detected": {
     "directoryName": "Qwen3.5-27B-Q5_K_M",
     "sourceRoot": "D:/gguf",
-    "scannedAt": "2026-04-05T03:44:38.866Z",
-    "status": "ready"
+    "scannedAt": "2026-04-23T13:26:45.518Z",
+    "status": "missing"
   },
   "user": {
     "enabled": true,

@@ -1,0 +1,24 @@
+{
+  "key": "qwen3-6-35b-a3b-ud-q4-k-m",
+  "displayName": "Qwen3.6-35B-A3B-UD-Q4_K_M",
+  "paths": {
+    "model": "D:/gguf/Qwen3.6-35B-A3B-UD-Q4_K_M/Qwen3.6-35B-A3B-UD-Q4_K_M.gguf",
+    "mmproj": "D:/gguf/Qwen3.6-35B-A3B-UD-Q4_K_M/mmproj-BF16.gguf"
+  },
+  "detected": {
+    "directoryName": "Qwen3.6-35B-A3B-UD-Q4_K_M",
+    "sourceRoot": "D:/gguf",
+    "scannedAt": "2026-04-26T14:51:16.684Z",
+    "status": "ready"
+  },
+  "user": {
+    "enabled": true,
+    "args": [
+      "-c",
+      "131072",
+      "--chat-template-kwargs",
+      "{\"preserve_thinking\": true}"
+    ],
+    "notes": ""
+  }
+}
